@@ -57,9 +57,11 @@ EDA中有过经验，相对容易。
 
 |tasks|status|details|create date|finish date|负责人|
 |-|-|-|-|-|-|
-|初步测试前人代码|未完成|确定是否可用，万一想做很大的扩展，能留好退路|2017-07-04||JHY + LYH|
-|思考需要的指令集|未完成|明天去实验室讨论，当场确定好|2017-07-04||JHY + LYH + ZN|
-|查阅MIPS指令流水的资料|未完成|根据实现难度决定是否要加入拓展|2017-07-04||ZN|
+|初步测试前人代码|完成|基本可用，但结构粗糙，需要重构|2017-07-04|2017-07-05|JHY + LYH|
+|思考需要的指令集|完成|5条指令，均在WEIHAI-MIPS中，可能需要加入NOP空悬指令|2017-07-04|2017-07-05|JHY + LYH + ZN|
+|查阅MIPS指令流水的资料|完成|已经看懂了实现原理，但需要重点解决冲突问题|2017-07-04|2017-07-05|ZN|
+|重构MIPS|未完成|参考指导书的代码，需要加入哈佛结构|2017-07-04||JHY + LYH + ZN|
+
 
 ## 参考链接
 
@@ -68,3 +70,5 @@ EDA中有过经验，相对容易。
 [verilog实现16位五级流水线的CPU带Hazard冲突处理](http://www.cnblogs.com/wsine/p/4661147.html)
 
 [MIPS的五级流水线](http://imgtec.eefocus.com/article/10-07/1968501278904262.html)
+
+[mips-cpu - A MIPS CPU written in Verilog](https://github.com/jmahler/mips-cpu)
