@@ -21,7 +21,7 @@
 
 //数据内存,默认为 1024*4 Byte，带读写信号
 
-module damemory#(parameter WIDTH=32,DEPTH=1024)(
+module dmemory#(parameter WIDTH=32,DEPTH=1024)(
     input                     clk,
     input                     mem_write,
     input                     mem_read,
@@ -33,7 +33,7 @@ module damemory#(parameter WIDTH=32,DEPTH=1024)(
     reg    [WIDTH-1:0]   mem[DEPTH-1:0];
 
     /*
-        TODO:添加数据读入、数码管、防抖动逻辑
+            TODO:添加数据读入、数码管、防抖动逻辑
     */
 
     always @(posedge clk) begin

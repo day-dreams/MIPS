@@ -19,17 +19,17 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-
-module regfile #(parameter WIDTH=32,REGBITS=5) (
-    input                   clk,
-    input                   regwrite,
-    input [REGBITS-1:0]     ra1,ra2,wa,
-    input [WIDTH-1:0]       wd,
-    input [WIDTH-1:0]       rd1,rd2
+//¼Ä´æÆ÷¶Ñ£¬Ã»ÓÐ¶ÁÐÅºÅ£¬Á¢¼´³öÊý
+module regfile #(parameter WIDTH=32,REG_NUM=5) (
+    input  wire                   clk,
+    input  wire                   regwrite,
+    input  wire [REG_NUM-1:0]     ra1,ra2,wa,
+    input  wire [WIDTH-1:0]       wd,
+    output wire [WIDTH-1:0]       rd1,rd2
     );
     
     //Ä¬ÈÏÎª32Æ¬32Î»¼Ä´æÆ÷
-    reg   [WIDTH-1:0]       RAM[(1<<REGBITS)-1:0];
+    reg   [WIDTH-1:0]       RAM[REG_NUM-1:0];
     
     //Ð´¼Ä´æÆ÷Âß¼­
     always @(posedge clk)begin
