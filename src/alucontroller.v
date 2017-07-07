@@ -1,4 +1,6 @@
 `timescale 1ns / 1ps
+`ifndef ALUCON
+`define ALUCON
 //////////////////////////////////////////////////////////////////////////////////
 // Company: 
 // Engineer: 
@@ -29,7 +31,7 @@ module alucontroller(
     always @(*) begin
         case(aluop) 
             2'b00:  alucont <= 3'b010;// 加法，用于LB，SB，ADDI
-            2'b01:  alucont <= 3'b110;// 减法，用于BEQ
+            2'b01:  alucont <= 3'b100;// 判断相等，用于BEQ
             default:
                 case(funct)//Rtype，立即数类型
                     6'b100000: alucont <= 3'b010;//add
@@ -42,3 +44,5 @@ module alucontroller(
         endcase
     end
 endmodule
+
+`endif

@@ -1,3 +1,6 @@
+`ifndef CONFIG
+`define CONFIG
+
 //机器字长
 parameter MACHINE_WIDTH   = 32;
 
@@ -30,13 +33,19 @@ parameter STATE_LBWR        = 4'b1000;
 parameter STATE_SBWR        = 4'b1001;
 parameter STATE_RTYPEEX     = 4'b1010;
 parameter STATE_RTYPEWR     = 4'b1011;
-parameter STATE_BEQEX       = 4'b1100;
-parameter STATE_JEX         = 4'b1101;
+parameter STATE_BEQCALPC    = 4'b1100;
+parameter STATE_BEQEQUAL    = 4'b1101;
+parameter STATE_BEQSETPC    = 4'b1110;
+parameter STATE_PCADD       = 4'b1111;
+
 
 //指令操作码
+parameter OPCODE_LEN        = 6;
 parameter OPCODE_LB         = 6'b100000;        //从内存取数
 parameter OPCODE_SB         = 6'b101000;        //向内存读数
 parameter OPCODE_RTYPE      = 6'b0;             //立即数型指令，本实现主要使用addi，slt
 parameter OPCODE_BEQ        = 6'b000100;        //相等则分支
-parameter OPCODE_J           = 6'b000010;        //无条件跳转 
+parameter OPCODE_J          = 6'b000010;        //无条件跳转 
 
+
+`endif

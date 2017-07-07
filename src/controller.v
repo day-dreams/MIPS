@@ -1,86 +1,119 @@
+`ifndef CONTROLLER
+`define CONTROLLER
+
 `timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 2017/07/06 09:14:58
-// Design Name: 
-// Module Name: controller
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
 
 `include"config.v"
 
-//控制器，核心模块之一
 module controller(
-    input  ckl,reset,
-    input  [5:0] op,//指令操作码
-    input   zero,//常数0
-    
-    //TODO:unknown
-    output iord,//TODO:unknown
-    //for pc
-    output pcen,//TODO:unknown
-    output reg[1:0] pcsource,//TODO:unknown    
-    //for data mem
-    output  reg dmread,dmwrite,//数据内存读写控制信号
-    output  memtoreg,//读内存信号    
-    //for inst mem
-    output  reg imread,//指令内存读控制信号   
-    //for alu
-    output reg[1:0] aluop,//ALU操作类型
-    output alusrca,//ALU的输入选择，操作数a只来自于寄存器或者PC
-    output [1:0] alusrcb,//ALU的输入选择，操作数b只来自于寄存器，常数1，指令的形式地址    
-    //for reg file
-    output regwrite,//寄存器堆写控制信号，用于LB，TTYPE
-    output regdst,//寄存器地址
-    output reg[3:0] irwrite//寄存器写地址
+        input clk,reset,
+        input [31:0] equal,//用于beq
+        input [5:0] opcode,
+        output reg ra1src,wdsrc,opasrc,opbsrc,pcsrc,
+        output reg [1:0] wasrc,
+        output reg [1:0] aluop,
+        output reg regwrite,dm_read,dm_write                          
     );
     
-    reg [3:0] state,nextstate;//状态机标志
-    reg       pcwrite,pcwritecond;//TODO:unknown
+    reg [3:0] state,next_state;
     
-    //状态机状态控制
-    always @(*) begin
-        if(reset) state <= STATE_FX;//重置，取指令状态
-        else state <= nextstate;//更新，下一个状态
+    always@(posedge clk)begin
+        if(reset)
+            state<=STATE_FX;
+        else
+            state<=next_state;
+    end
+
+    always@(posedge clk)begin
+        case(state)
+            STATE_FX:   next_state<=STATE_DECODE;
+            STATE_DECODE:
+                case(opcode)
+                    OPCODE_LB:  next_state<=STATE_MEMADR;
+                    OPCODE_SB:  next_state<=STATE_MEMADR;
+                    OPCODE_RTYPE: next_state<=STATE_RTYPEEX;
+                    OPCODE_BEQ: next_state<=STATE_BEQCALPC;
+                    default: next_state<=STATE_FX;                 
+                endcase
+           STATE_MEMADR:
+                case(opcode)
+                    OPCODE_LB:  next_state<=STATE_LBRD;
+                    OPCODE_SB:  next_state<=STATE_PCADD;
+                    default:    next_state<=STATE_FX;
+                endcase
+           STATE_LBRD:next_state<=STATE_LBWR;
+           STATE_LBWR:next_state<=STATE_PCADD;
+           STATE_SBWR:next_state<=STATE_PCADD;
+           STATE_RTYPEEX:next_state<=STATE_RTYPEWR;
+           STATE_RTYPEWR:next_state<=STATE_PCADD;
+           STATE_BEQCALPC:next_state<=STATE_BEQEQUAL;
+           STATE_BEQEQUAL:next_state<=STATE_BEQSETPC;
+           STATE_BEQSETPC:next_state<=STATE_FX;
+           STATE_PCADD:next_state<=STATE_FX;
+        endcase
     end
     
-    //状态机状态迁移
-    always @(*)begin
-        case (state)
-            STATE_FX: nextstate<=STATE_DECODE;
-            STATE_DECODE:case(op)
-                            OPCODE_LB:      nextstate <= STATE_MEMADR;
-                            OPCODE_SB:      nextstate <= STATE_MEMADR;
-                            OPCODE_RTYPE:   nextstate <= STATE_RTYPEEX;
-                            OPCODE_BEQ:     nextstate <= STATE_BEQEX;
-                            OPCODE_J:       nextstate <= STATE_JEX;
-                            default:        nextstate <= STATE_FX;
-                         endcase
-            STATE_MEMADR: case(op)
-                            OPCODE_LB:     nextstate <= STATE_LBRD;
-                            OPCODE_SB:     nextstate <= STATE_SBWR;
-                            default:       nextstate <= STATE_FX;
-                          endcase
-            STATE_LBRD:                     nextstate<=STATE_LBWR;
-            STATE_LBWR:                     nextstate<=STATE_FX;  
-            STATE_RTYPEEX:                  nextstate<=STATE_RTYPEWR;
-            STATE_RTYPEWR:                  nextstate<=STATE_FX;
-            STATE_BEQEX:                    nextstate<=STATE_FX;
-            STATE_JEX:                      nextstate<=STATE_FX;
-            default:                        nextstate<=STATE_FX;
-        endcase       
+    always@(posedge clk)begin
+        //重置所有控制信号
+        ra1src<=1'b0;wdsrc<=1'b0;opasrc<=1'b0;opbsrc<=1'b0;pcsrc<=1'b0;
+        wasrc<=2'b00;
+        aluop<=2'b00;
+        regwrite<=1'b0;dm_read<=1'b0;dm_write<=1'b0;
+        case(state)
+            STATE_FX:begin
+            end
+            STATE_DECODE:begin
+            end
+            STATE_MEMADR:begin
+                opasrc<=1;
+                opbsrc<=0;
+                aluop<=2'b00;
+            end
+            STATE_LBRD:begin
+                dm_read<=1;
+            end
+            STATE_LBWR:begin
+                wdsrc<=1'b0;
+                wasrc<=2'b01;
+                regwrite<=1'b1;               
+            end
+            STATE_SBWR:begin
+                dm_write<=1'b1;
+            end
+            STATE_RTYPEEX:begin
+                opasrc<=1'b1;
+                opbsrc<=1'b1;
+                aluop<=2'b11;
+            end
+            STATE_RTYPEWR:begin
+                wdsrc<=1;
+                if (opcode==6'b000000)//for slt
+                    wasrc<=2'b10;
+                else
+                    wasrc<=2'b00;
+            end
+            STATE_BEQCALPC:begin
+                opasrc<=0;
+                opbsrc<=1;
+                aluop<=2'b00;
+            end 
+            STATE_BEQEQUAL:begin
+                opasrc<=1;
+                opbsrc<=0;
+                aluop<=2'b01;
+            end
+            STATE_BEQSETPC:begin
+                if(equal)
+                    pcsrc<=1;
+                else
+                    pcsrc<=0;
+            end
+            STATE_PCADD:begin
+                pcsrc<=0;
+            end
+        endcase      
     end
     
 endmodule
+
+`endif

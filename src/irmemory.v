@@ -1,3 +1,6 @@
+`ifndef IRMEMORY
+`define IRMEMORY
+
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
 // Company: 
@@ -35,3 +38,5 @@ module imemory #(parameter WIDTH=32,DEPTH=1024)(
     assign instruction = mem[address];
     
 endmodule
+
+`endif

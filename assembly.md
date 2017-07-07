@@ -30,4 +30,4 @@ MAX_BRANCH: slt    flag,  max,      data       #最大值比较
             sw     min,   0(ad_min)            #存字
 ```
 
-目前一共5条指令: addi,slt,beq,lw,sw
+目前一共5条指令: addi, slt,beq,lw,sw

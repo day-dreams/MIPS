@@ -1,3 +1,6 @@
+`ifndef REGFILE
+`define REGFILE
+
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
 // Company: 
@@ -41,3 +44,5 @@ module regfile #(parameter WIDTH=32,REG_NUM=5) (
     assign rd2 = ra2 ? RAM[ra2] : 0;    
      
 endmodule
+
+`endif

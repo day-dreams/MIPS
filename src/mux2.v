@@ -1,3 +1,6 @@
+`ifndef MUX2
+`define MUX2
+
 /*
     BY: zhangnan,20170705
 */
@@ -11,3 +14,5 @@ module mux2 #(parameter WIDTH=32)(
     assign y = s ? d1 : d0;
  
 endmodule
+
+`endif

@@ -6,7 +6,7 @@
 module mux4 #(parameter WIDTH=32)(
     input   [WIDTH-1:0]   d0,d1,d2,d3,
     input                 s,//—°‘Ò–≈∫≈
-    output  [WIDTH-1:0]   y);
+    output  reg [WIDTH-1:0]   y);
     
     always @(*)
         case (s)
