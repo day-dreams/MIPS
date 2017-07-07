@@ -25,7 +25,7 @@ module cpu(
     assign instruction=data_from_im;
     assign opcode=instruction[31:26];
     assign rs=instruction[25:21];
-    assign rt=instruction[21:16];
+    assign rt=instruction[20:16];
     assign imme=instruction[15:0];
     assign func=instruction[5:0];
     assign rd=instruction[15:11];
