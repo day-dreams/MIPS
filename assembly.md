@@ -6,13 +6,26 @@
 */
 max = integers[0];
 min = integers[0];
-for(int i = 0; i != num; ++i){
-    if(integers[i] < min)
-        min = integers[i];
-    if(max < integers[i])
-        max = integers[i];
+begin=integers;//[begin,end),end事先在指令中写好
+end=integers+num;
+for(; begin != end ; ++begin){
+    if(integers[begin] < min)
+        min = integers[begin];
+    if(max < integers[begin])
+        max = integers[begin];
 }
 ```
+## 类汇编
+一共32个寄存器,具体用途如下
+|寄存器编号|用途|对应到c语言的变量名|
+|-|-|-|
+||存放integers的首地址|integers|
+||存放intergers的个数|num|
+||存放当前访问元素的地址|begin|
+||存放最后一个元的地址+4|end|
+
+
+
 ## 类汇编
 假设$s1存放max，$s2存放min，$s3存放i,$s4存放integers地址，$s5存放num,$s6存放比较结果flag, $s7存放临时来自存储器的数据data，$s8存放最大值在内存中的地址ad_max，$s9存放最小值在内存中的地址ad_min,且数据已经到位
 ```assembly
