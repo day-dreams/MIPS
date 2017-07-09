@@ -25,7 +25,7 @@ module regfile #(parameter WIDTH=32,REG_NUM=5) (
     
     //写寄存器逻辑
     always @(posedge clk)begin
-        if(regwrite) RAM[wa] < =wd;
+        if(regwrite) RAM[wa] <= wd;
     end
     
     //如果有读信号则返回对应寄存器内容，否则返回0
