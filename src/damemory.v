@@ -45,21 +45,27 @@ module dmemory #(parameter WIDTH=32,DEPTH=1024)(
     end
     
     //ÊýÂë¹ÜÂß¼­
-    reg [31:0] data=32'b1234;
+    initial begin
+        mem[MAX_NUM_ADDRESS]=32'd5678;
+        mem[MIN_NUM_ADDRESS]=-32'd5678;
+    end
+    reg [31:0] data_to_seg ;
     always @(button_down or button_up)begin
-        if({button_down,button_up}=2'b00)begin
+        if({button_down,button_up}==2'b00)begin
+             data_to_seg = -32'd333;
         end
-        if({button_down,button_up}=2'b01)begin
-            data=mem[MAX_NUM_ADDRESS];
+        if({button_down,button_up}==2'b01)begin
+            data_to_seg=mem[MAX_NUM_ADDRESS];
         end
-        if({button_down,button_up}=2'b10)begin
-            data=mem[MIN_NUM_ADDRESS];        
+        if({button_down,button_up}==2'b10)begin
+            data_to_seg=mem[MIN_NUM_ADDRESS];        
         end
-        if({button_down,button_up}=2'b00)begin
+        if({button_down,button_up}==2'b11)begin
+            data_to_seg = 32'd333;
         end
     end
 
-   segled_eynamDisp (clk,reset,data,seg_c1,seg_c2,seg_c3,seg_c4,
+   segled_eynamDisp (clk,reset,data_to_seg,seg_c1,seg_c2,seg_c3,seg_c4,
                     seg_a,seg_b,seg_c,seg_e,seg_d,seg_f,seg_g,seg_h);
     
 endmodule

@@ -26,8 +26,8 @@ parameter BUTTON_D_ADDRESS = 32'HFFFA;
 parameter BUTTON_C_ADDRESS = 32'HFFF9;
 
 //最大值最小值存放地址
-parameter MAX_NUM_ADDRESS=32'HFFF0;//0-3
-parameter MIN_NUM_ADDRESS=32'HFFF4;//4-7
+parameter MAX_NUM_ADDRESS=32'H00F0;//0-3
+parameter MIN_NUM_ADDRESS=32'H00F4;//4-7
 
 
 

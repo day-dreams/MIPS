@@ -6,7 +6,7 @@ module segled_eynamDisp (
 //input 
 input                    sys_clk        ,
 input                    sys_rst_n      ,
-input  [31:0]            input_data     ,//补码
+input  [31:0]            input_data           ,
 
 //output 
 output wire              seg_c1         ,
@@ -24,8 +24,10 @@ output reg               seg_g          ,
 output reg               seg_h    
               );
 
+//reg  [31:0]            input_data=-32'd1234;    
+
 reg [31:0] raw_data;
-initial begin
+always @(input_data)begin
 if (input_data[31]==1'b1)
 	 raw_data=~(input_data-1);
 else	
@@ -66,7 +68,7 @@ wire [40:0]                bcds;
 wire                       flag;//for +,-
 
 reg                         enable=1;
-bin2bcd decode(input_data,bcds);
+bin2bcd decode(raw_data,bcds);
 
 //wire define 
 
@@ -78,7 +80,7 @@ bin2bcd decode(input_data,bcds);
  
 // gen scan SegLED counter, 1ms scan time
 always @(posedge sys_clk or negedge sys_rst_n) begin 
-   if (sys_rst_n ==1'b0)  
+   if (sys_rst_n ==1'b1)  
        scan_cnt <= 16'b0;
    else 
 	    scan_cnt <= scan_cnt + 16'b1;
@@ -86,7 +88,7 @@ end
 
 //  gen segled bit sel by cnt high 2 bit
 always @(posedge sys_clk or negedge sys_rst_n) begin 
-   if (sys_rst_n ==1'b0)  
+   if (sys_rst_n ==1'b1)  
        segled_bit_sel <= 4'b0001;
 	else if ( scan_cnt[15:14] == 2'b00 )
        segled_bit_sel <= 4'b0001;
@@ -101,7 +103,7 @@ end
  
 // clk cnt for DISP data increase
 always @(posedge sys_clk or negedge sys_rst_n) begin 
-   if (sys_rst_n ==1'b0)  
+   if (sys_rst_n ==1'b1)  
        clk_cnt <= 26'b0;
    else if ( clk_cnt == 26'd50000000 )
        clk_cnt <= 26'b0;
@@ -111,7 +113,7 @@ end
     
 // DISP data increase from 0-9
 always @(posedge sys_clk or negedge sys_rst_n) begin 
-    if (sys_rst_n ==1'b0)  
+    if (sys_rst_n ==1'b1)  
         counter <= 4'd0;
     else if ( clk_cnt == 26'd50000000 && counter == 4'd9 ) 
         counter <= 4'b0;
@@ -123,18 +125,17 @@ end
 // sel dsip 4 bit data	
 always @(*) begin 
     if ( segled_bit_sel == 4'b0001 ) begin
-		if (data[31]==1'b1)
-    	    disp_data = 4'b1111;//自己定义的一个数值，用来表示负数
-    	 else
-    	   disp_data=bcds[15:12];
-	end
+        if (input_data[31]==1'b1)
+           disp_data = 4'b1111;//自己定义的一个数值，用来表示负数
+        else
+           disp_data=bcds[15:12];
+   end 
     else if ( segled_bit_sel == 4'b0010 ) 
         disp_data = bcds[11:8];// data[23:16] ;
     else if (segled_bit_sel == 4'b0100 ) 
         disp_data = bcds[7:4]; //data[15:8];
-	 else begin
-        disp_data = bcds[3:0];
-	     end 
+	 else
+	    disp_data = bcds[3:0];    
 end
 
 // SEGLED decode from disp data			
