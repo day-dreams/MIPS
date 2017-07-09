@@ -1,26 +1,14 @@
+/**
+ * @author [张楠，金宏昱，李依涵]
+ * @email [749832428@qq.com]
+ * @create date 2017-07-09 09:54:38
+ * @modify date 2017-07-09 09:54:38
+ * @desc [description]
+*/
+
+
 `ifndef IRMEMORY
 `define IRMEMORY
-
-`timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 2017/07/05 07:04:22
-// Design Name: 
-// Module Name: irmemory
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
 
 //指令内存,默认为 1024*4 Byte，读信号
 module imemory #(parameter WIDTH=32,DEPTH=1024)(

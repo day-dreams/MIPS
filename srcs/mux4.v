@@ -1,5 +1,9 @@
-/*
-    BY: zhangnan,20170705
+/**
+ * @author [张楠，金宏昱，李依涵]
+ * @email [749832428@qq.com]
+ * @create date 2017-07-09 09:54:58
+ * @modify date 2017-07-09 09:54:58
+ * @desc [description]
 */
  
 //2路选择器

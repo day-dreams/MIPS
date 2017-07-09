@@ -1,25 +1,14 @@
-`timescale 1ns / 1ps
+/**
+ * @author [张楠，金宏昱，李依涵]
+ * @email [749832428@qq.com]
+ * @create date 2017-07-09 09:50:03
+ * @modify date 2017-07-09 09:50:03
+ * @desc [description]
+*/
+
+
 `ifndef ALUCON
 `define ALUCON
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 2017/07/06 09:57:01
-// Design Name: 
-// Module Name: alucontroller
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
 
 //ALU的控制单元
 module alucontroller(

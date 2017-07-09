@@ -1,10 +1,13 @@
+/**
+ * @author [张楠，金宏昱，李依涵]
+ * @email [749832428@qq.com]
+ * @create date 2017-07-09 09:47:11
+ * @modify date 2017-07-09 09:47:11
+ * @desc [description]
+*/
+
 `ifndef ALU
 `define ALU
-
-
-/*
-    BY: zhangnan,20170705
-*/
 
 //运算单元,采用verilog自动集成的运算功能
 module alu #(parameter WIDTH=32)(

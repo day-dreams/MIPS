@@ -1,4 +1,13 @@
-module bin2bcd#( parameter                W = 18)  // input width
+/**
+ * @author [张楠，金宏昱，李依涵]
+ * @email [749832428@qq.com]
+ * @create date 2017-07-09 09:50:29
+ * @modify date 2017-07-09 09:50:29
+ * @desc [description]
+*/
+
+//二进制转十进制，使用add-3算法
+module bin2bcd#(parameter W = 18)  // input width
   ( input      [W-1      :0] bin   ,  // binary
     output reg [W+(W-4)/3:0] bcd   ); // bcd {...,thousands,hundreds,tens,ones}
 

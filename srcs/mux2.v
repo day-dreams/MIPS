@@ -1,9 +1,13 @@
+/**
+ * @author [张楠，金宏昱，李依涵]
+ * @email [749832428@qq.com]
+ * @create date 2017-07-09 09:54:47
+ * @modify date 2017-07-09 09:54:47
+ * @desc [description]
+*/
+
 `ifndef MUX2
 `define MUX2
-
-/*
-    BY: zhangnan,20170705
-*/
  
 //2路选择器
 module mux2 #(parameter WIDTH=32)(

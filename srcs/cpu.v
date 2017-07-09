@@ -1,7 +1,14 @@
+/**
+ * @author [张楠，金宏昱，李依涵]
+ * @email [749832428@qq.com]
+ * @create date 2017-07-09 09:52:27
+ * @modify date 2017-07-09 09:52:27
+ * @desc [description]
+*/
+
 `ifndef _CPU
 `define _CPU
 
-`timescale 1ns / 1ps
 `include"config.v"
 `include"regfile.v"
 `include"mux2.v"
@@ -71,7 +78,7 @@ module cpu(
     mux2 #(32) for_pc(pc_add,alu_out,pcsrc,pc);     
     
     //控制器
-    controller(clk,reset,equal,opcode,
+    controller(clk,reset,equal,opcode,func,
                 ra1src,wdsrc,opasrc,opbsrc,pcsrc,
                 wasrc,aluop,regwrite,dm_read,dm_write                       
         );
