@@ -12,17 +12,21 @@
 `timescale 1ns / 1ps
 
 //¼Ä´æÆ÷¶Ñ£¬Ã»ÓÐ¶ÁÐÅºÅ£¬Á¢¼´³öÊý
-module regfile #(parameter WIDTH=32,REG_NUM=5) (
+module regfile #(parameter WIDTH=32,DEPTH=32) (
     input  wire                   clk,
     input  wire                   regwrite,
-    input  wire [REG_NUM-1:0]     ra1,ra2,wa,
+    input  wire [WIDTH-1:0]     ra1,ra2,wa,
     input  wire [WIDTH-1:0]       wd,
     output wire [WIDTH-1:0]       rd1,rd2
     );
     
     //Ä¬ÈÏÎª32Æ¬32Î»¼Ä´æÆ÷
-    reg   [WIDTH-1:0]       RAM[REG_NUM-1:0];
+    reg   [WIDTH-1:0]       RAM[DEPTH-1:0];
     
+    always begin
+        RAM[0]=0;
+    end
+
     //Ð´¼Ä´æÆ÷Âß¼­
     always @(posedge clk)begin
         if(regwrite) RAM[wa] <= wd;

@@ -102,6 +102,7 @@ module controller(
                 dm_write<=1'b1;
             end
             STATE_RTYPEEX:begin
+                ra1src=1'b1;
                 opasrc<=1'b1;
                 opbsrc<=1'b1;
                 aluop<=2'b11;
@@ -111,7 +112,7 @@ module controller(
                 if (opcode==6'b000000)//for slt
                     wasrc<=2'b10;
                 else
-                    wasrc<=2'b00;
+                    wasrc<=2'b01; 
             end
             STATE_BEQCALPC:begin
                 opasrc<=0;

@@ -51,7 +51,7 @@ module cpu(
     mux2 #(5) for_ra1(rs,rt,ra1src,ra1);
     mux2 #(5) for_wd(data_from_dm,alu_out,wdsrc,wd);
     mux4 #(5) for_wa(rs,rt,rd,rd,wasrc,wa);
-    regfile #(32,5) refister_file (clk,regwrite,ra1,ra2,wa,wd,rd1,rd2);
+    regfile #(32,32) refister_file (clk,regwrite,ra1,ra2,wa,wd,rd1,rd2);
     
     wire [31:0] pc,pc_add;//±‹√‚«∞œÚ…˘√˜
     //ALU,ALU_CON
