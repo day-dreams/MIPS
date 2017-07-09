@@ -1,11 +1,12 @@
 `ifndef SEGLED
 `define SEGLED
 
+`include"bin2bcd.v"
 module segled_eynamDisp ( 
 //input 
 input                    sys_clk        ,
 input                    sys_rst_n      ,
-input  [31:0]            data           ,
+input  [31:0]            input_data     ,//补码
 
 //output 
 output wire              seg_c1         ,
@@ -22,6 +23,14 @@ output reg               seg_f          ,
 output reg               seg_g          ,
 output reg               seg_h    
               );
+
+reg [31:0] raw_data;
+initial begin
+if (input_data[31]==1'b1)
+	 raw_data=~(input_data-1);
+else	
+	 raw_data=input_data;
+end
 
 //parameter define 
 parameter WIDTH2 = 26;
@@ -52,6 +61,12 @@ reg                     segled_f          ;
 reg                     segled_g          ;
 reg                     segled_h          ;
 
+
+wire [40:0]                bcds;
+wire                       flag;//for +,-
+
+reg                         enable=1;
+bin2bcd decode(input_data,bcds);
 
 //wire define 
 
@@ -107,19 +122,34 @@ end
 
 // sel dsip 4 bit data	
 always @(*) begin 
-    if ( segled_bit_sel == 4'b0001 ) 
-        disp_data =  data[7:0];
+    if ( segled_bit_sel == 4'b0001 ) begin
+		if (data[31]==1'b1)
+    	    disp_data = 4'b1111;//自己定义的一个数值，用来表示负数
+    	 else
+    	   disp_data=bcds[15:12];
+	end
     else if ( segled_bit_sel == 4'b0010 ) 
-        disp_data =  data[15:8];
+        disp_data = bcds[11:8];// data[23:16] ;
     else if (segled_bit_sel == 4'b0100 ) 
-        disp_data =  data[23:16] ;
-	 else 
-        disp_data =  data[31:24];	 
+        disp_data = bcds[7:4]; //data[15:8];
+	 else begin
+        disp_data = bcds[3:0];
+	     end 
 end
 
 // SEGLED decode from disp data			
 always @(*) begin 
     case (disp_data)
+         15       :     begin
+                         segled_a = 0 ;   
+                                        segled_b = 0 ;   
+                                   segled_c = 0 ;   
+                                        segled_e = 0 ;   
+                                        segled_d = 0 ;   
+                                        segled_f = 0 ;   
+                                   segled_g = 1 ;   
+                                        segled_h = 0 ;   
+         end
          9        :  
 			            begin
 			                segled_a = 1 ;   
@@ -228,7 +258,7 @@ always @(*) begin
 								 segled_d = 1 ;   
 								 segled_f = 1 ;   
 			                segled_g = 0 ;   
-								 segled_h = 1 ;   
+								 segled_h = 0 ;   
 			            end 			
          default  :      
 						   begin
@@ -262,7 +292,12 @@ assign seg_c2 = ~( segled_bit_sel == 4'b0010 );
 assign seg_c3 = ~( segled_bit_sel == 4'b0100 );
 assign seg_c4 = ~( segled_bit_sel == 4'b1000 );
 
+
+
+
+
 endmodule
 //end of RTL code                  
+
 
 `endif

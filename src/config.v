@@ -13,6 +13,7 @@ parameter REGISTER_ADDRESS_WIDTH=5;
 //寄存器个数
 parameter REGISTER_NUM=32;
 
+
 //数码管及片选信号的地址，只使用低位字节
 parameter LED_SEG_ADDRESS  = 32'HFFFF;
 parameter LED_PIN_CONTROL  = 32'HFFFE;
@@ -23,6 +24,12 @@ parameter BUTTON_R_ADDRESS = 32'HFFFC;
 parameter BUTTON_U_ADDRESS = 32'HFFFB;
 parameter BUTTON_D_ADDRESS = 32'HFFFA;
 parameter BUTTON_C_ADDRESS = 32'HFFF9;
+
+//最大值最小值存放地址
+parameter MAX_NUM_ADDRESS=32'HFFF0;//0-3
+parameter MIN_NUM_ADDRESS=32'HFFF4;//4-7
+
+
 
 //状态机标记
 parameter STATE_FX          = 4'b0001;

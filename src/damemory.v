@@ -23,7 +23,9 @@ module dmemory #(parameter WIDTH=32,DEPTH=1024)(
     input  wire               seg_d ,
     input  wire               seg_f ,
     input  wire               seg_g ,
-    input  wire               seg_h 
+    input  wire               seg_h ,
+    input  wire               button_up,
+    input  wire               button_down
     );
     
     reg    [WIDTH-1:0]   mem[DEPTH-1:0];
@@ -43,24 +45,22 @@ module dmemory #(parameter WIDTH=32,DEPTH=1024)(
     end
     
     //数码管逻辑
-    initial begin//初始化
-       mem[LED_SEG_ADDRESS]=32'H1234; 
+    reg [31:0] data=32'b1234;
+    always @(button_down or button_up)begin
+        if({button_down,button_up}=2'b00)begin
+        end
+        if({button_down,button_up}=2'b01)begin
+            data=mem[MAX_NUM_ADDRESS];
+        end
+        if({button_down,button_up}=2'b10)begin
+            data=mem[MIN_NUM_ADDRESS];        
+        end
+        if({button_down,button_up}=2'b00)begin
+        end
     end
-    
-    segled_eynamDisp (clk,reset,
-   mem[LED_SEG_ADDRESS] ,
-   seg_c1,
-   seg_c2,
-   seg_c3,
-   seg_c4,
-   seg_a ,
-   seg_b ,
-   seg_c ,
-   seg_e ,
-   seg_d ,
-   seg_f ,
-   seg_g ,
-   seg_h);
+
+   segled_eynamDisp (clk,reset,data,seg_c1,seg_c2,seg_c3,seg_c4,
+                    seg_a,seg_b,seg_c,seg_e,seg_d,seg_f,seg_g,seg_h);
     
 endmodule
 
