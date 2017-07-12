@@ -36,6 +36,8 @@ if(min<0)
     true_min=~(min-1);
 else
     true_min=min;
+min_ones=0;
+min_tens=0;
 min_hunds=0;
 min_thouds=0;
 for(int i=0;i!=32;++i){
