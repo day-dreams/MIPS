@@ -1,151 +1,210 @@
-/**
- * @author [张楠，金宏昱，李依涵]
- * @email [749832428@qq.com]
- * @create date 2017-07-09 09:52:21
- * @modify date 2017-07-09 09:52:21
- * @desc [description]
-*/
 
+module controller(input clk, reset, 
+                 input      [5:0] op, 
+                 input            zero,
+                 input            sign,
+                 input      [5:0] funct ,  //加一个输入，以便判断R-TYPE中的SAM输入类型以及双寄存器输入类型 
+                 output reg       memread, memwrite, memtoreg, iord, //iord添加的控制信号
+                 output           pcen, 
+                 output reg       regwrite, regdst, SorI,
+                 output reg [1:0] pcsource, alusrcb,  alusrca, select,//select 添加的控制信号
+                 //////////////////////////关于select信号的输出控制问题
+                 output reg [5:0] aluop,
+                 output reg  irwrite);
+                 
+  wire flag;
+  wire [3:0] funct_sign;
+  assign funct_sign = funct[5:2];
+  wire temp = ~sign;
+ // parameter  TEMP  =2'b00;
+  mux4       #(1)  ttmux(zero, sign, temp ,1'b0 , select, flag);
+  ////////////////////////////////////////////////////////////////////////////////
+  parameter   FETCH1  =  6'b000001;
+  parameter   DECODE  =  6'b000101;
+  parameter   MEMADR  =  6'b000110;
+  parameter   LWRD    =  6'b000111;
+  parameter   LWWR    =  6'b001000;
+  parameter   SWWR    =  6'b001001;
+  parameter   RTYPEEX =  6'b001010;
+  parameter   RTYPEEY =  6'b001111;         //添加了R-type的类型数值
+  parameter   RTYPEWR =  6'b001011;
+  parameter   BEQEX   =  6'b001100;
+  parameter   JEX     =  6'b001101;
+  parameter   JR      =  6'b001110;
+  parameter   IEX     =  6'b000010;
+  parameter   IEXX    =  6'b000011;
+//////////////////////////////////////////////////////////////////////////
+  parameter   LW      =  6'b100011;
+  parameter   SW      =  6'b101011;
+  parameter   RTYPE   =  6'b000000;
+  
+  parameter   BEQ     =  6'b000100;
+  parameter   AddI    =  6'b001000;
+  parameter   AddIU   =  6'b001001;
+  parameter   SLTI    =  6'b001010;  /////////////////////////////////////////////
+  parameter   ANDI    =  6'b001100;
+  parameter   ORI     =  6'b001101;
+  parameter   XORI    =  6'b001110;
+  parameter   LUI     =  6'b001111; 
+  
+  parameter   J       =  6'b000010;
 
-`ifndef CONTROLLER
-`define CONTROLLER
+  reg [5:0] state, nextstate;
+  reg       pcwrite, pcwritecond;
 
-`include"config.v"
+  // state register
+  always @(posedge clk)
+     if(reset) state <= FETCH1;
+     else state <= nextstate;
 
-module controller(
-        input clk,reset,
-        input [31:0] equal,//用于beq
-        input [5:0] opcode,func,
-        output reg ra1src,wdsrc,opasrc,opbsrc,pcsrc,
-        output reg [1:0] wasrc,
-        output reg [1:0] aluop,
-        output reg regwrite,dm_read,dm_write                          
-    );
-    
-    reg [4:0] state,next_state;
-    
-    //初始状态是取指令
-    initial begin
-        state=STATE_FX;
-    end
+  // next state logic
 
-    always@(posedge clk)begin
-        if(reset)
-            state<=STATE_FX;
-        else
-            state<=next_state;
-    end
-
-    always@(posedge clk)begin
+  always @(*)
+     begin
         case(state)
-            STATE_FX:   next_state<=STATE_DECODE;
-            STATE_DECODE:
-                case(opcode)
-                    OPCODE_LB:  next_state<=STATE_MEMADR;
-                    OPCODE_SB:  next_state<=STATE_MEMADR;
-                    OPCODE_RTYPE: 
-                        if(func==FUNC_ADD)//寄存器间的加法指令
-                            next_state<=STATE_ADDEX;
-                        else//普通的立即数指令
-                            next_state<=STATE_RTYPEEX;
-                    OPCODE_BEQ: next_state<=STATE_BEQCALPC;
-                    default: next_state<=STATE_FX;                 
-                endcase
-            STATE_ADDEX:
-                next_state<=STATE_ADDWR;
-             STATE_ADDWR:
-                next_state<=STATE_PCADD;
-            STATE_MEMADR:
-                case(opcode)
-                    OPCODE_LB:  next_state<=STATE_LBRD;
-                    OPCODE_SB:  next_state<=STATE_PCADD;
-                    default:    next_state<=STATE_FX;
-                endcase
-            STATE_LBRD:next_state<=STATE_LBWR;
-            STATE_LBWR:next_state<=STATE_PCADD;
-            STATE_SBWR:next_state<=STATE_PCADD;
-            STATE_RTYPEEX:next_state<=STATE_RTYPEWR;
-            STATE_RTYPEWR:next_state<=STATE_PCADD;
-            STATE_BEQCALPC:next_state<=STATE_BEQEQUAL;
-            STATE_BEQEQUAL:next_state<=STATE_BEQSETPC;
-            STATE_BEQSETPC:next_state<=STATE_FX;
-            STATE_PCADD:next_state<=STATE_FX;
+           FETCH1:  nextstate <= DECODE;
+           DECODE:  case(op)
+                       LW:      nextstate <= MEMADR;
+                       SW:      nextstate <= MEMADR;
+                       RTYPE:  
+                          case  (funct_sign)
+                              4'b0000: nextstate <= RTYPEEY;   //R-TYPE 中的SAM输入型
+                              4'b0010: nextstate <= JR;
+                              default: nextstate <= RTYPEEX;   //R-TYPE 中的双寄存器型
+                          endcase
+                       
+                       BEQ:     nextstate <= BEQEX;
+                       J:       nextstate <= JEX; 
+                       AddI:    nextstate <= IEX;
+                       AddIU:   nextstate <= IEX;
+                       SLTI:    nextstate <= IEX;
+                       ANDI:     nextstate <= IEX;
+                       ORI:     nextstate <= IEX;
+                       XORI:    nextstate <= IEX;
+                       LUI:     nextstate <= IEX;            
+                       default: nextstate <= FETCH1; // should never happen
+                    endcase
+           MEMADR:  case(op)
+                       LW:      nextstate <= LWRD;
+                       SW:      nextstate <= SWWR;
+                       default: nextstate <= FETCH1; // should never happen
+                    endcase
+           LWRD:    nextstate <= LWWR;
+           LWWR:    nextstate <= FETCH1;         //将存取字节指令的名称全部改为存取字(将LBRD/LBWR/SWWR改为LWRD/LEER/SWWR)
+           SWWR:    nextstate <= FETCH1;
+           RTYPEEX: nextstate <= RTYPEWR;
+           RTYPEEY: nextstate <= RTYPEWR;         //增加R-TYPE型的sam输入类型
+           RTYPEWR: nextstate <= FETCH1;
+           BEQEX:   nextstate <= FETCH1;
+           JEX:     nextstate <= FETCH1;
+           JR:      nextstate <= FETCH1;
+           IEX:     nextstate <= IEXX;
+           IEXX:    nextstate <= FETCH1;
+           default: nextstate <= FETCH1; // should never happen
         endcase
-    end
-    
-    always@(posedge clk)begin
-        //重置所有控制信号
-        ra1src<=1'b0;wdsrc<=1'b0;opasrc<=1'b0;opbsrc<=1'b0;pcsrc<=1'b0;
-        wasrc<=2'b00;
-        aluop<=2'b00;
-        regwrite<=1'b0;dm_read<=1'b0;dm_write<=1'b0;
-        case(state)
-            STATE_FX:begin
-            end
-            STATE_DECODE:begin
-            end
-            STATE_MEMADR:begin
-                opasrc<=1;
-                opbsrc<=0;
-                aluop<=2'b00;
-            end
-            STATE_LBRD:begin
-                dm_read<=1;
-            end
-            STATE_LBWR:begin
-                wdsrc<=1'b0;
-                wasrc<=2'b01;
-                regwrite<=1'b1;               
-            end
-            STATE_SBWR:begin
-                ra1src<=1'b1;
-                dm_write<=1'b1;
-            end
-            STATE_RTYPEEX:begin
-                ra1src=1'b1;
-                opasrc<=1'b1;
-                opbsrc<=1'b1;
-                aluop<=2'b11;
-            end
-            STATE_RTYPEWR:begin
-                wdsrc<=1;
-                if (opcode==6'b000000)//for slt
-                    wasrc<=2'b10;
-                else
-                    wasrc<=2'b01; 
-            end
-            STATE_BEQCALPC:begin
-                opasrc<=0;
-                opbsrc<=1;
-                aluop<=2'b00;
-            end 
-            STATE_BEQEQUAL:begin
-                opasrc<=1;
-                opbsrc<=0;
-                aluop<=2'b01;
-            end
-            STATE_BEQSETPC:begin
-                if(equal)
-                    pcsrc<=1;
-                else
-                    pcsrc<=0;
-            end
-            STATE_PCADD:begin
-                pcsrc<=0;
-            end
-            STATE_ADDEX:begin
-                ra1src<=0;
-                opasrc<=1;
-                opasrc<=0;
-            end
-            STATE_ADDWR:begin
-                wdsrc=1;
-                wasrc=2'b11;
-                regwrite<=1;
-            end
-        endcase      
-    end
-    
-endmodule
+      
+     end
+       
+           
+  always @(*)
+     begin
+           // set all outputs to zero, then conditionally assert just the appropriate ones
+           irwrite <= 0;                  //irwrite
+           pcwrite <= 0; pcwritecond <= 0;
+           regwrite <= 0; regdst <= 0;
+           memread <= 0; memwrite <= 0;
+           alusrca <= 0; alusrcb <= 2'b00; aluop <= 2'b00;
+           pcsource <= 2'b00;
+           iord <= 0; memtoreg <= 0;
+           case(state)
+              FETCH1: //TODO:需要修改成哈弗结构的控制信号
+                 begin
+                    // memread <= 1; 
+                     irwrite <= 1;
+                    alusrcb <= 2'b01; 
+                    pcwrite <= 1;
+                 end
+              
+              DECODE: alusrcb <= 2'b11;
+              MEMADR:
+                 begin
+                    alusrca <= 2'b01;
+                    alusrcb <= 2'b10;
+                 end
+              LWRD:
+                 begin
+                    memread <= 1;
+                    iord    <= 1;
+                 end
+              LWWR:
+                 begin
+                    regwrite <= 1;
+                    memtoreg <= 1;
+                 end
+               SWWR:
+                 begin
+                     memwrite<=1;
+                     iord<=1;
+                 end
+             RTYPEEX:
+                 begin
+                 alusrca <=2'b01;
+                 alusrcb <=2'b00;
+                 aluop <= 2'b10;
+                 end
+                     
+              RTYPEEY:
+                  begin
+                    alusrca <= 2'b10;
+                    alusrcb <= 2'b10;
+                    aluop   <= 2'b10;
+                    SorI    <=1;
+                  end
+              RTYPEWR:
+                 begin
+                    regdst   <= 1;
+                    regwrite <= 1;
+                 end
+              BEQEX:
+                 begin
+                    alusrca     <= 2'b01;
+                    aluop       <= 2'b01;
+                    pcwritecond <= 1;
+                    alusrcb     <= 2'b00;
+                    pcsource    <= 2'b01;
+                      case(op)
+                       6'b000100: select<=2'b00;  // beq
+                      endcase
+                 end
+              JEX:
+                 begin
+                    pcwrite  <= 1;
+                    pcsource <= 2'b10;
+                 end
+              JR:
+                  begin
+                    pcwrite  <= 1;
+                    pcsource <= 2'b11;
+                 end
+              AddI:begin
 
-`endif
+                end
+              IEX:
+                 begin
+                    alusrca  <= 2'b01;
+                    SorI     <= 0;
+                    alusrcb  <= 2'b10;
+                    aluop    <= op;
+                 end
+              IEXX:
+                 begin
+                   regdst<=0;
+                   regwrite<=1;
+                   memtoreg<=0;
+                 end    
+        endcase
+     end
+         
+  assign pcen = pcwrite | (pcwritecond & (flag)); // program counter enable
+                                                  // 对控制信号进行修改，使正、负、零、均可以控制PC的跳转       
+endmodule
