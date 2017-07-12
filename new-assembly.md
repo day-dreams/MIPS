@@ -57,7 +57,7 @@ for(int i=0;i!=32;++i){
 
 SCAN_TIMES=0;
 SEG_SCAN:
-    SCAN_TIMES+=0;
+    SCAN_TIMES+=1;
     if(SCAN_TIMES==32'd50000000 )//50000000大概是28位
         SCAN_TIMES=0;  
     temp=SCAN_TIMES>>26;//取当前扫描次数的最高两位
