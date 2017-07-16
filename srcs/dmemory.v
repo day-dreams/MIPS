@@ -1,3 +1,5 @@
+//`include"config.v"
+
 //数据内存
 module dmemory #(parameter WIDTH = 32) (
       input clk,reset,
@@ -7,8 +9,21 @@ module dmemory #(parameter WIDTH = 32) (
       output reg [WIDTH-1:0] memdata,
       output wire [3:0] AN,
       output wire [7:0] CX);
-
-
+      
+      
+      parameter MAX_ONES=32'h00fd;
+      parameter MAX_TENS=32'h00fc;
+      parameter MAX_HUNDS=32'h00fb;
+      parameter MAX_THOUDS=32'h00fa;
+      parameter MIN_ONES=32'h00f9;
+      parameter MIN_TENS=32'h00f8;
+      parameter MIN_HUNDS=32'h00f7;
+      parameter MIN_THOUDS=32'h00f6;
+      
+      reg [31:0]data_to_led,bits_to_choose;
+      
+      led seg_leds(clk,reset,data_to_led,bits_to_choose,CX,AN);
+      
   reg  [31:0] RAM [1023:0];        //存储器容量32bit 256M
   wire [31:0] word;
   reg [31:0] max=32'h1234;
@@ -17,25 +32,23 @@ module dmemory #(parameter WIDTH = 32) (
      begin
       $readmemb("C:/Users/moon/Desktop/my-mips-cpu/assembly/my-data.bat",RAM);        //读指令
      end
-     
-     led moled(clk, reset,max,min,up,down,AN,CX);
+    
       always @(posedge clk)
       if(memwrite) begin
-          case (adr)
-              32'h00001000: begin 
-              max = writedata;
-              $display("MAX :%h,WRITE_DATA:%h",max,writedata);
-              //$stop();
+
+              case (adr)
+              32'h00000400: begin 
+                data_to_led=writedata;
+                $display("DATA :%h,ADDR:%h",data_to_led,adr);
               end
-              32'h00001004 : begin 
-              min = writedata;
-               $display("MIN :%h,WWRITE_DATA:%h",min,writedata);
-               //$stop();
+              32'h00000c00 : begin 
+                bits_to_choose=writedata;
+                $display("DATA :%h,ADDR:%h",bits_to_choose,adr);
               end
               default: 
                   begin 
-                      $display("CURRENT_WRITE_DMADR:%b",adr);
-                      RAM[adr>>2][31:0]= writedata;   //32位可一次读入
+                      RAM[adr][31:0]= writedata;   //32位可一次读入
+                     // $display("DATA :%h,ADDR:%h",RAM[adr],adr);
                   end
           endcase
       end
@@ -43,8 +56,17 @@ module dmemory #(parameter WIDTH = 32) (
   assign word = RAM[adr>>2];
    
   always @(*)   begin
-   memdata <= word[31:0];
-   //$display("DMEM..... %b",RAM[0]);
+    if(adr==32'h00001008)begin
+        memdata<={31'b0,up};
+        $display("READMEM:%h,%d",adr,up);
+     end
+    else if(adr==32'h00001010)begin
+        memdata<={31'b0,down};
+        $display("READMEM:%h,%d",adr,up);
+      end
+     else
+      memdata <= word[31:0];
+//   $display("DMEM..... %b",RAM[0]);
    end 
 
 endmodule

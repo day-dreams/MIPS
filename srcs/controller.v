@@ -3,12 +3,11 @@ module controller(input clk, reset,
                  input      [5:0] op, 
                  input            zero,
                  input            sign,
-                 input      [5:0] funct ,  //加一个输入，以便判断R-TYPE中的SAM输入类型以及双寄存器输入类型 
+                 input      [5:0] funct ,  
                  output reg       memread, memwrite, memtoreg, iord, //iord添加的控制信号
                  output           pcen, 
                  output reg       regwrite, regdst, SorI,
                  output reg [1:0] pcsource, alusrcb,  alusrca, select,//select 添加的控制信号
-                 //////////////////////////关于select信号的输出控制问题
                  output reg [5:0] aluop,
                  output reg  irwrite);
                  
@@ -16,7 +15,6 @@ module controller(input clk, reset,
   wire [3:0] funct_sign;
   assign funct_sign = funct[5:2];
   wire temp = ~sign;
- // parameter  TEMP  =2'b00;
   mux4       #(1)  ttmux(zero, sign, temp ,1'b0 , select, flag);
   ////////////////////////////////////////////////////////////////////////////////
   parameter   FETCH1  =  6'b000001;

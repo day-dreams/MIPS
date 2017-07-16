@@ -10,9 +10,7 @@ module imemory #(parameter WIDTH = 32) (
 
   initial
      begin
-      //$readmemb("D:/my-instructions.bat",ROM);        //¶ÁÖ¸Áî
       $readmemb("C:/Users/moon/Desktop/my-mips-cpu/assembly/test.bat",ROM);        //¶ÁÖ¸Áî
-            
      end
 
   assign word = ROM[adr>>2];
