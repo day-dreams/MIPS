@@ -41,9 +41,6 @@ module datapath #(parameter WIDTH = 32, REGBITS = 5)
   mux2       #(REGBITS) regmux(instr[REGBITS+15:16], instr[REGBITS+10:11], regdst, wa);
                                                               //指令寄存器右、靠上方的二路选择器
 
-  // independent of bit width, load instruction into four 8-bit registers over four cycles
-    //flopen     #(WIDTH)      ir(clk, irwrite, memdata[31:0], instr[31:0]);
-    
   parameter  CONST_4 = 32'b00000000000000000000000000000100;
 
   // datapath
@@ -53,7 +50,6 @@ module datapath #(parameter WIDTH = 32, REGBITS = 5)
   flop       #(WIDTH)  wrd(clk, rd2, writedata);              //B
   flop       #(WIDTH)  res(clk, aluresult, aluout);           //ALUout模块
   
-  //mux2       #(WIDTH)  adrmux(pc, aluout, iord, adr);         //PC右边的二路选择器
   mux2       #(WIDTH)  adrmux(pc, aluout, 1'b1, adr);         //PC右边的二路选择器
     
   mux4       #(WIDTH)  src1mux(pc, a, writedata ,CONST_ONE, alusrca, src1);   //A右边的二路选择器

@@ -4,10 +4,10 @@ module controller(input clk, reset,
                  input            zero,
                  input            sign,
                  input      [5:0] funct ,  
-                 output reg       memread, memwrite, memtoreg, iord, //iord添加的控制信号
+                 output reg       memread, memwrite, memtoreg, iord, 
                  output           pcen, 
                  output reg       regwrite, regdst, SorI,
-                 output reg [1:0] pcsource, alusrcb,  alusrca, select,//select 添加的控制信号
+                 output reg [1:0] pcsource, alusrcb,  alusrca, select,
                  output reg [5:0] aluop,
                  output reg  irwrite);
                  
@@ -16,7 +16,6 @@ module controller(input clk, reset,
   assign funct_sign = funct[5:2];
   wire temp = ~sign;
   mux4       #(1)  ttmux(zero, sign, temp ,1'b0 , select, flag);
-  ////////////////////////////////////////////////////////////////////////////////
   parameter   FETCH1  =  6'b000001;
   parameter   DECODE  =  6'b000101;
   parameter   MEMADR  =  6'b000110;
@@ -204,5 +203,4 @@ module controller(input clk, reset,
      end
          
   assign pcen = pcwrite | (pcwritecond & (flag)); // program counter enable
-                                                  // 对控制信号进行修改，使正、负、零、均可以控制PC的跳转       
 endmodule

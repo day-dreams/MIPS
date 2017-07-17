@@ -47,7 +47,7 @@ module dmemory #(parameter WIDTH = 32) (
               end
               default: 
                   begin 
-                      RAM[adr][31:0]= writedata;   //32位可一次读入
+                      RAM[adr][31:0]= writedata;   
                      // $display("DATA :%h,ADDR:%h",RAM[adr],adr);
                   end
           endcase

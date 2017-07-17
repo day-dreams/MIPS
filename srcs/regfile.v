@@ -1,3 +1,4 @@
+
 module regfile #(parameter WIDTH = 32, REGBITS = 5)
                (input                clk, 
                 input                regwrite, 
@@ -7,13 +8,9 @@ module regfile #(parameter WIDTH = 32, REGBITS = 5)
 
   reg  [WIDTH-1:0] RAM [(1<<REGBITS)-1:0];
 
-  // three ported register file
-  // read two ports combinationally
-  // write third port on rising edge of clock
-  // register 0 hardwired to 0
   initial
      begin
-     RAM[0]<=32'b0; //$zero 0ºÅ¼Ä´æÆ÷
+     RAM[0]<=32'b0;
 //        $monitor("--Time=%0d--\n %h %h %h %h\n %h %h %h %h\n %h %h %h %h\n %h",$time,RAM[0],RAM[1],RAM[2],RAM[3],
 //                                                        RAM[4],RAM[5],RAM[6],RAM[7],
 //                                                        RAM[8],RAM[9],RAM[10],RAM[11],RAM[12]);
@@ -27,7 +24,7 @@ module regfile #(parameter WIDTH = 32, REGBITS = 5)
     
   always @(posedge clk)begin
      if (regwrite) begin 
-        $fdisplay(file,"WD:%h WA:%d",wd,wa);
+         $fdisplay(file,"WD:%h WA:%d",wd,wa);
          $display("WD:%h WA:%d",wd,wa);
        RAM[wa] = wd;
      end    

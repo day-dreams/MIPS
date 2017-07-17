@@ -47,7 +47,6 @@ module alu #(parameter WIDTH = 32)
         5'b01010: result = srl;
         5'b01011: result = sra;
         
-        //5'b00111: result = sum;//这条是addu的加法
         5'b00111: result = slt;//这条是addu的加法        
         
         5'b01101: result = sub;//这条是subu的减法
@@ -56,9 +55,6 @@ module alu #(parameter WIDTH = 32)
         5'b10000: result = lui;
       
      endcase
-//         if(alucont[4:0]==5'b00110)
-      //   $display("a=%h,b=%h,c=%h",a,b,result);
-      //$display("opa:%b,opb=%b,result=%b,alucont=%b",a,b,result,alucont); 
-      
+      //$display("opa:%b,opb=%b,result=%b,alucont=%b",a,b,result,alucont);       
      end
 endmodule

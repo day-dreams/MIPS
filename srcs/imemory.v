@@ -5,7 +5,7 @@ module imemory #(parameter WIDTH = 32) (
       output reg [WIDTH-1:0] memdata
     );
 
-  reg  [31:0] ROM [1023:0];        //´æ´¢Æ÷ÈÝÁ¿32bit 256M
+  reg  [31:0] ROM [1023:0];        
   wire [31:0] word;
 
   initial
@@ -17,7 +17,6 @@ module imemory #(parameter WIDTH = 32) (
    
   always @(*)   begin
    memdata <= word[31:0];
-   //$display("IMEM..... %b",ROM[0]);
    end 
 
 endmodule
